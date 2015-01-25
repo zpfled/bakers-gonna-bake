@@ -2,7 +2,11 @@ class Converters
   require 'base64'
 
   def self.hex_to_base64(hex_string)
-    Base64.strict_encode64(to_chars(hex_decode(hex_string)).join)
+    Base64.strict_encode64(hex_to_plaintext(hex_string))
+  end
+
+  def self.hex_to_plaintext(hex_string)
+    to_chars(hex_decode(hex_string)).join
   end
 
   def self.hex_fixed_xor(hex_string, key)
