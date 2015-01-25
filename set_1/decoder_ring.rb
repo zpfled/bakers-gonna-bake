@@ -3,6 +3,7 @@ require_relative 'config'
 module DecoderRing
   require 'base64'
   require 'xor'
+  require 'utility'
 
   # Decode Hexadecimal Strings
     def self.hex_to_base64(hex_string) # encodes hex_string into base 64 equivalent
@@ -18,6 +19,16 @@ module DecoderRing
       hex_string.scan(/../).map do |byte|
         byte.to_i(16)
       end
+    end
+
+    def self.single_substitution(input)
+      messages = {}
+      (0..255).each do |k|
+        potential_key = Array.new(hex_to_bytes(input).length, k)
+        message = hex_to_plaintext(XOR.encode(hex_to_bytes(input), potential_key))
+        messages[Utility::Plaintext.score(message)] = message
+      end
+      return messages.max[1]
     end
 
   # ====

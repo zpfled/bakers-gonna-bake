@@ -19,5 +19,13 @@ describe Crypto do
         expect(Crypto.challenge_2(hex_string, key)).to eq(result)
       end
     end
+
+    describe 'challenge 3' do
+      it 'completed' do
+        hex_string = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
+        Crypto.challenge_3(hex_string)
+        expect(Crypto.challenge_3(hex_string)).to eq("Cooking MC's like a pound of bacon")
+      end
+    end
   end
 end

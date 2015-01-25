@@ -9,6 +9,10 @@ class Crypto
   end
 
   def self.challenge_2(input, key)
-    XOR.encode(input, key)
+    XOR.encode(DecoderRing.hex_to_bytes(input), DecoderRing.hex_to_bytes(key))
+  end
+
+  def self.challenge_3(input)
+    DecoderRing.single_substitution(input)
   end
 end
