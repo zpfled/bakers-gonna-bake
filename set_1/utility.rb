@@ -9,6 +9,8 @@ module Utility
       + score_bigrams(plain_text)
     end
 
+  private
+
     def self.score_chars(plain_text)
       # return sum of relative frequencies of alphabetical characters in a string
       score = 0
@@ -20,6 +22,7 @@ module Utility
     end
 
     def self.score_bigrams(plain_text)
+      # return sum of relative frequencies of most common bigrams in English
       score = 0
       plain_text.chars.each_with_index do |letter, i|
         bigram = "#{letter}#{plain_text[i + 1]}"
