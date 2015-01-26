@@ -15,4 +15,8 @@ class Crypto
   def self.challenge_3(input)
     DecoderRing.single_substitution(input)
   end
+
+  def self.challenge_4(input_url)
+    Utility.find_needle(input_url, :single_substitution)
+  end
 end
