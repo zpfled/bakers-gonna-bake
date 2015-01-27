@@ -31,5 +31,15 @@ module DecoderRing
       return messages.max[1]
     end
 
+    def self.find_needle(haystack, method)
+      potential_messages = {}
+      Utility::Web.txt_file_to_array(haystack).each do |line|
+        try = self.send(method, line)
+        potential_messages[Utility::Plaintext.score(try)] = try
+      end
+      potential_messages.max
+    end
+
+
   # ====
 end

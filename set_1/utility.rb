@@ -13,16 +13,6 @@ module Utility
     end
   end
 
-  def self.find_needle(haystack, method)
-    potential_messages = {}
-    Web.txt_file_to_array(haystack).each do |line|
-      try = DecoderRing.send(method, line)
-      potential_messages[Plaintext.score(try)] = try
-    end
-    potential_messages.max
-  end
-
-
   module Plaintext
 
     def self.score(plain_text)
