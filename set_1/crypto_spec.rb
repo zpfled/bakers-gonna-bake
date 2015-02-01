@@ -30,7 +30,7 @@ describe Crypto do
     describe 'challenge 4' do
       it 'completed' do
         url = "cryptopals.com/static/challenge-data/4.txt"
-        expect(Crypto.challenge_4(url)[1]).to eq("Now that the party is jumping")
+        expect(Crypto.challenge_4(url)[1]).to eq("Now that the party is jumping\n")
       end
     end
 
