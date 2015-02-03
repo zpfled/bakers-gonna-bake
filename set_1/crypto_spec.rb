@@ -1,3 +1,4 @@
+system 'clear'
 require_relative 'config'
 
 describe Crypto do
@@ -28,7 +29,7 @@ describe Crypto do
     end
 
     describe 'challenge 4' do
-      it 'completed' do
+      xit 'completed' do
         url = "cryptopals.com/static/challenge-data/4.txt"
         expect(Crypto.challenge_4(url)[1]).to eq("Now that the party is jumping\n")
       end
