@@ -12,11 +12,11 @@ class Crypto
   end
 
   def self.challenge_3(input)
-    DecoderRing.single_substitution(input)
+    XOR.single_substitution(input)
   end
 
   def self.challenge_4(input_url)
-    DecoderRing.find_needle(input_url, :single_substitution)
+    DecoderRing.new(target_url: input_url).find_needle
   end
 
   def self.challenge_5(input_plaintext, key)

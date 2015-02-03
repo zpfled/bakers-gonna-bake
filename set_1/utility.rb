@@ -11,5 +11,11 @@ module Utility
       path = '/' + url.split('/')[1..-1].join('/')
       Net::HTTP.get(base, path).split("\n")
     end
+
+    def self.txt_file_string(url) # return an array of strings parsed from a website
+      base = url.split('/')[0]
+      path = '/' + url.split('/')[1..-1].join('/')
+      Net::HTTP.get(base, path)
+    end
   end
 end

@@ -1,6 +1,25 @@
 # system 'clear'
 require_relative 'config'
 
+describe DecoderRing do
+  let(:dr) do
+    DecoderRing.new({
+      target_url: "cryptopals.com/static/challenge-data/4.txt",
+      max_key_size: 20
+    })
+  end
+
+  describe '#find_keysize' do
+    it 'returns the most likely keysize for repeating key XOR' do
+      source = "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d62"
+      p dr.find_keysize(source)
+      expect(dr.find_keysize(source)).to eq(3)
+      # source = "2300060b06171c41131d0452020e000a41100a00071b08141a0d521b0913014110000c101c"
+      # expect(dr.find_keysize(source)).to eq(4)
+    end
+  end
+end
+
 describe Hex do
 
   describe '#to_plaintext(hex_string)' do
