@@ -9,7 +9,7 @@ module DecoderRing
     keys = (key ? [key] : 0..255)
     keys.each do |k|
       potential_key = Array.new(Hex.to_bytes(input).length, k)
-      message = Hex.to_plaintext(DecoderRing::Encode::XOR.fixed(Hex.to_bytes(input), potential_key))
+      message = Hex.to_plaintext(DecoderRing::XOR.fixed(Hex.to_bytes(input), potential_key))
       next if Utility::Plaintext.score(message) == 0
       messages[Utility::Plaintext.score(message)] = message
     end
@@ -25,18 +25,11 @@ module DecoderRing
     potential_messages.max
   end
 
+
   # Converter Modules ==========================================================
 
   module Plaintext
-    def self.to_bytes(plaintext_string) # returns array of bytes as integers
-      raise ArgumentError if plaintext_string.class != String
-      plaintext_string.chars.map(&:ord)
-    end
 
-    def self.to_base64(plaintext_string) # encodes plaintext_string into base 64 equivalent
-      raise ArgumentError if plaintext_string.class != String
-      Base64.strict_encode64(plaintext_string)
-    end
   end
 
   module Hex
@@ -56,44 +49,41 @@ module DecoderRing
     end
   end
 
-  module Encode
-    module XOR
+  module XOR
 
-      def self.repeating_key(input, key)
-        raise ArgumentError if key.class != String
-        input_bytes = (input.class == Array ? input : Plaintext.to_bytes(input))
-        l = input_bytes.length
-        key_bytes = Plaintext.to_bytes(key)
-        counter = 0
-        until key_bytes.length == l
-          counter = 0 if counter > 2
-          key_bytes << Plaintext.to_bytes(key[counter])[0]
-          counter += 1
+    def self.repeating_key(input, key)
+      raise ArgumentError if key.class != String
+      input_bytes = (input.class == Array ? input : Plaintext.to_bytes(input))
+      l = input_bytes.length
+      key_bytes = Plaintext.to_bytes(key)
+      counter = 0
+      until key_bytes.length == l
+        counter = 0 if counter > 2
+        key_bytes << Plaintext.to_bytes(key[counter])[0]
+        counter += 1
+      end
+      fixed(input_bytes, key_bytes)
+    end
+
+    def self.fixed(input, key) # return string of hexadecimal bytes
+      raise ArgumentError if (input.class != Array || key.class != Array)
+      encode(input, key).map do |byte|
+        byte = byte.to_s(16)
+        if byte.length == 1
+          byte.prepend('0')
         end
-        fixed(input_bytes, key_bytes)
-      end
+        byte
+      end.join
+    end
 
-      def self.fixed(input, key) # return string of hexadecimal bytes
-        raise ArgumentError if (input.class != Array || key.class != Array)
-        encode(input, key).map do |byte|
-          byte = byte.to_s(16)
-          if byte.length == 1
-            byte.prepend('0')
-          end
-          byte
-        end.join
+    def self.encode(input, key)
+      raise ArgumentError if (input.class != Array || key.class != Array)
+      result = []
+      counter = 0
+      (0..input.length - 1).each do |index|
+        result.push(input[index] ^ key[index])
       end
-
-      def self.encode(input, key)
-        raise ArgumentError if (input.class != Array || key.class != Array)
-        result = []
-        counter = 0
-        (0..input.length - 1).each do |index|
-          result.push(input[index] ^ key[index])
-        end
-        result
-      end
+      result
     end
   end
-
 end

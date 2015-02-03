@@ -2,6 +2,8 @@ $LOAD_PATH.unshift(File.dirname(__FILE__))
 require_relative 'decoder_ring'
 require_relative 'crypto'
 require_relative 'utility'
+require_relative 'hamming'
+require_relative 'plaintext'
 
 # Constants
 
