@@ -4,22 +4,23 @@ require_relative 'config'
 describe DecoderRing do
   let(:dr) do
     DecoderRing.new({
-      target_url: "cryptopals.com/static/challenge-data/4.txt",
-      max_key_size: 10
+      target_url: "cryptopals.com/static/challenge-data/4.txt"
     })
   end
 
   describe '#break_repeating_key_xor' do
-    let(:message) do
-      str = ""
-      100.times { str<<('a'..'z').to_a.sample }
-      Plaintext::Convert.to_bytes(str).map { |byte| byte.to_s(16) }.join
-    end
-    let(:key) { 'key' }
+    let(:message) { 'I\'m killing your brain like a poisonous mushroom' }
+    let(:key) { 'keychi' }
 
     describe '#find_keysizes' do
       it 'returns an array of potential keysizes, including the correct one' do
-        100.times { expect(dr.find_keysizes(message).include?(3)).to be true }
+        10.times do
+          message = Faker::Company.catch_phrase
+          msg = XOR.repeating_key(message, key)
+          p message, message.length / 2
+          p dr.find_keysizes(msg)
+          expect(dr.find_keysizes(msg).include?(6)).to be true
+        end
       end
     end
 

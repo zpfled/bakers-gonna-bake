@@ -14,20 +14,6 @@ class DecoderRing
     find_keysizes(source)
   end
 
-  def find_keysizes(source)
-    score_keysizes(source).keys.sort[0..score_keysizes(source).keys.length / 2]
-  end
-
-  def score_keysizes(source)
-    potential_keysizes = {}
-    (min_key_size..max_key_size).each do |keysize|
-      chunk1 = Hex::Convert.to_bytes(source)[0..(keysize - 1)]
-      chunk2 = Hex::Convert.to_bytes(source)[keysize..(keysize * 2 - 1)]
-      potential_keysizes[keysize] = (Hamming.distance(chunk1, chunk2)).to_f / keysize
-    end
-    potential_keysizes
-  end
-
   def find_needle
     potential_messages = {}
     target.split("\n").each do |line|
@@ -36,5 +22,24 @@ class DecoderRing
       potential_messages[Plaintext.score(try)] = try
     end
     potential_messages.max
+  end
+
+  def find_keysizes(source)
+    score_keysizes(source).keep_if do |keysize, distance|
+      distance <= 3
+    end.keys
+  end
+
+private
+
+  def score_keysizes(source)
+    potential_keysizes = {}
+    (min_key_size..max_key_size).each do |keysize|
+      chunk1 = Hex::Convert.to_bytes(source)[0..(keysize - 1)]
+      chunk2 = Hex::Convert.to_bytes(source)[keysize..(keysize * 2 - 1)]
+      return potential_keysizes if chunk1.length != chunk2.length
+      p potential_keysizes[keysize] = (Hamming.distance(chunk1, chunk2)) / keysize
+    end
+    potential_keysizes
   end
 end
