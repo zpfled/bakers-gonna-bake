@@ -4,11 +4,11 @@ class Crypto
   require 'decoder_ring'
 
   def self.challenge_1(input)
-    Hex.to_base64(input)
+    Hex::Convert.to_base64(input)
   end
 
   def self.challenge_2(input, key)
-    DecoderRing::XOR.fixed(Hex.to_bytes(input), Hex.to_bytes(key))
+    DecoderRing::XOR.fixed(Hex::Convert.to_bytes(input), Hex::Convert.to_bytes(key))
   end
 
   def self.challenge_3(input)

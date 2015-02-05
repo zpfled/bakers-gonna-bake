@@ -5,17 +5,29 @@ describe DecoderRing do
   let(:dr) do
     DecoderRing.new({
       target_url: "cryptopals.com/static/challenge-data/4.txt",
-      max_key_size: 20
+      max_key_size: 10
     })
   end
 
-  describe '#find_keysize' do
-    it 'returns the most likely keysize for repeating key XOR' do
-      source = "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d62"
-      p dr.find_keysize(source)
-      expect(dr.find_keysize(source)).to eq(3)
-      # source = "2300060b06171c41131d0452020e000a41100a00071b08141a0d521b0913014110000c101c"
-      # expect(dr.find_keysize(source)).to eq(4)
+  describe '#break_repeating_key_xor' do
+    let(:message) do
+      str = ""
+      100.times { str<<('a'..'z').to_a.sample }
+      Plaintext::Convert.to_bytes(str).map { |byte| byte.to_s(16) }.join
+    end
+    let(:key) { 'key' }
+
+    describe '#find_keysizes' do
+      it 'returns an array of potential keysizes, including the correct one' do
+        100.times { expect(dr.find_keysizes(message).include?(3)).to be true }
+      end
+    end
+
+    xit 'returns the most likely keysize for repeating key XOR' do
+      message = Plaintext::Convert.to_bytes("I'm killing your brain like a poisonous mushroom")
+      key = "key"
+      source = XOR.repeating_key(message, key)
+      expect(dr.find_keysizes(source)).to eq(10)
     end
   end
 end
@@ -26,7 +38,7 @@ describe Hex do
     it 'returns plaintext representation of hex_string' do
       input = "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"
       output = "I'm killing your brain like a poisonous mushroom"
-      expect(Hex.to_plaintext(input)).to eq output
+      expect(Hex::Convert.to_plaintext(input)).to eq output
     end
   end
 
@@ -34,7 +46,7 @@ describe Hex do
     it 'returns array of bytes as integers' do
       input = "49276d"
       output = [73, 39, 109]
-      expect(Hex.to_bytes(input)).to eq output
+      expect(Hex::Convert.to_bytes(input)).to eq output
     end
   end
 end
@@ -73,8 +85,10 @@ describe Hamming do
 
   describe '#distance' do
     it 'returns the Hamming distance between two arrays of bytes' do
+      control = Plaintext::Convert.to_bytes("control")
       test = Plaintext::Convert.to_bytes("this is a test")
       wokka = Plaintext::Convert.to_bytes("wokka wokka!!!")
+      expect(Hamming.distance(control, control)).to eq 0
       expect(Hamming.distance(test, wokka)).to eq 37
     end
   end

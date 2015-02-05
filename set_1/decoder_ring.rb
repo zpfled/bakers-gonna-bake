@@ -7,24 +7,25 @@ class DecoderRing
     @target = Utility::Web.txt_file_string(opts[:target_url])
     @min_key_size = opts[:min_key_size] || 2
     @max_key_size = opts[:max_key_size] || 40
-    p @min_key_size, @max_key_size
     @keysize = nil
   end
 
-  def find_keysize(source=target)
+  def break_repeating_key_xor(source=target)
+    find_keysizes(source)
+  end
+
+  def find_keysizes(source)
+    score_keysizes(source).keys.sort[0..score_keysizes(source).keys.length / 2]
+  end
+
+  def score_keysizes(source)
     potential_keysizes = {}
     (min_key_size..max_key_size).each do |keysize|
-      chunk1 = Plaintext::Convert.to_bytes(source[0..(keysize - 1)])
-      puts
-      p "keysize: #{keysize}"
-      chunk2 = Plaintext::Convert.to_bytes(source[keysize..(keysize * 2 - 1)])
-      p chunk1.length == chunk2.length
-      p chunk1.length == keysize
-      p "HAM: #{Hamming.distance(chunk1, chunk2)} / #{keysize}"
-      p "HAM: #{(Hamming.distance(chunk1, chunk2) * 100) / keysize}"
-      potential_keysizes[(Hamming.distance(chunk1, chunk2) * 100) / keysize] = keysize
+      chunk1 = Hex::Convert.to_bytes(source)[0..(keysize - 1)]
+      chunk2 = Hex::Convert.to_bytes(source)[keysize..(keysize * 2 - 1)]
+      potential_keysizes[keysize] = (Hamming.distance(chunk1, chunk2)).to_f / keysize
     end
-    return potential_keysizes.min[1]
+    potential_keysizes
   end
 
   def find_needle

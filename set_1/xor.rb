@@ -31,8 +31,8 @@ module XOR
     messages = {}
     keys = (key ? [key] : 0..255)
     keys.each do |k|
-      potential_key = Array.new(Hex.to_bytes(input).length, k)
-      message = Hex.to_plaintext(XOR.fixed(Hex.to_bytes(input), potential_key))
+      potential_key = Array.new(Hex::Convert.to_bytes(input).length, k)
+      message = Hex::Convert.to_plaintext(XOR.fixed(Hex::Convert.to_bytes(input), potential_key))
       next if Plaintext.score(message) == 0
       messages[Plaintext.score(message)] = message
     end
