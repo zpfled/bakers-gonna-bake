@@ -1,7 +1,19 @@
-require 'config'
+require_relative 'config'
 
 module Utility
-  require 'decoder_ring'
+
+  def self.groups_of(n, input, output=[])
+    # recursive sexiness
+    return (input.length > 0 ? output : output) if input.length < n
+    # return (input.length > 0 ? output << input : output) if input.length < n
+    output << input.shift(n)
+    groups_of(n, input, output)
+  end
+
+  def self.decode64(target_string)
+    target_string_sans_newlines = Web.txt_file_string(target_string).gsub("\n", "")
+    Base64.strict_decode64(target_string_sans_newlines).chars.map(&:ord)
+  end
 
   module Web
     require 'net/http'

@@ -1,34 +1,38 @@
-# system 'clear'
+system 'clear'
 require_relative 'config'
 
 describe DecoderRing do
   let(:dr) do
     DecoderRing.new({
-      target_url: "cryptopals.com/static/challenge-data/4.txt"
+      target_url: "cryptopals.com/static/challenge-data/6.txt"
     })
   end
 
   describe '#break_repeating_key_xor' do
-    let(:message) { 'I\'m killing your brain like a poisonous mushroom' }
-    let(:key) { 'keychi' }
+    let(:message) { "This code is going to turn out to be surprisingly useful later on. Breaking repeating-key XOR ('Vigenere') statistically is obviously an academic exercise, a 'Crypto 101' thing. But more people 'know how' to break it than can actually break it, and a similar technique breaks something much more important." }
 
     describe '#find_keysizes' do
       it 'returns an array of potential keysizes, including the correct one' do
-        10.times do
-          message = Faker::Company.catch_phrase
-          msg = XOR.repeating_key(message, key)
-          p message, message.length / 2
-          p dr.find_keysizes(msg)
-          expect(dr.find_keysizes(msg).include?(6)).to be true
-        end
+        msg = Hex::Convert.to_bytes(XOR.repeating_key(message, 'key'))
+        result = dr.find_keysizes(msg)
+        expect(result.include?(3)).to be true
+
+        msg = Hex::Convert.to_bytes(XOR.repeating_key(message, 'matasano'))
+        result = dr.find_keysizes(msg)
+        expect(result.include?(8)).to be true
+
+        msg = Hex::Convert.to_bytes(XOR.repeating_key(message, 'challenges'))
+        result = dr.find_keysizes(msg)
+        expect(result.include?(10)).to be true
+
+        msg = Hex::Convert.to_bytes(XOR.repeating_key(message, 'matasano challenges'))
+        result = dr.find_keysizes(msg)
+        expect(result.include?(19)).to be true
       end
     end
 
-    xit 'returns the most likely keysize for repeating key XOR' do
-      message = Plaintext::Convert.to_bytes("I'm killing your brain like a poisonous mushroom")
-      key = "key"
-      source = XOR.repeating_key(message, key)
-      expect(dr.find_keysizes(source)).to eq(10)
+    it 'works great' do
+      p dr.break_repeating_key_xor()
     end
   end
 end
@@ -104,6 +108,20 @@ describe Hamming do
     it 'returns an 8-char binary byte as a string' do
       expect(Hamming.strict_binary(2)).to eq '00000010'
       expect(Hamming.strict_binary(6)).to eq '00000110'
+    end
+  end
+
+end
+
+describe Utility do
+
+  describe '#groups_of(n, array)' do
+    it 'returns an array of arrays, each one of length n' do
+      expect(Utility.groups_of(2, [1, 2, 3, 4])).to eq([[1, 2], [3, 4]])
+    end
+
+    it 'even the input length is not divisible by n, it handles things well' do
+      expect(Utility.groups_of(2, [1, 2, 3, 4, 5])).to eq([[1, 2], [3, 4], [5]])
     end
   end
 end

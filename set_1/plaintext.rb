@@ -18,7 +18,8 @@ module Plaintext
 
   def self.score(plain_text)
     score_chars(plain_text)
-    + score_bigrams(plain_text)
+    # + score_bigrams(plain_text)
+    # + score_trigrams(plain_text)
   end
 
 private
@@ -27,10 +28,15 @@ private
     # return sum of relative frequencies of alphabetical characters in a string
     score = 0
     plain_text.chars.each do |letter|
+      score += score_space_char(letter)
       next if !ENGLISH_CHAR_FREQUENCY[letter.to_sym]
       score += ENGLISH_CHAR_FREQUENCY[letter.to_sym]
     end
     return score
+  end
+
+  def self.score_space_char(chr)
+    chr == " " ? 13000 : 0
   end
 
   def self.score_bigrams(plain_text)
@@ -40,6 +46,19 @@ private
       bigram = "#{letter}#{plain_text[i + 1]}"
       next if !BIGRAMS[bigram.to_sym]
       score += BIGRAMS[bigram.to_sym]
+    end
+    return score
+  end
+
+
+  def self.score_trigrams(plain_text)
+    # return sum of relative frequencies of most common trigrams in English
+    score = 0
+    plain_text.chars.each_with_index do |letter, i|
+      trigram = "#{letter}#{plain_text[i + 1]}#{plain_text[i + 2]}"
+      next if !TRIGRAMS[trigram.to_sym]
+      p trigram
+      score += TRIGRAMS[trigram.to_sym]
     end
     return score
   end

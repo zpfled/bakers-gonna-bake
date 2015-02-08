@@ -63,3 +63,26 @@ BIGRAMS = {
   es: 1092,
   ng: 1053
 }
+
+TRIGRAMS = {
+  the: 3508,
+  and: 1593,
+  ing: 1147,
+  her: 822,
+  hat: 650,
+  his: 596,
+  tha: 593,
+  ere: 560,
+  for: 555,
+  ent: 530,
+  ion: 506,
+  ter: 461,
+  was: 460,
+  you: 437,
+  ith: 431,
+  ver: 430,
+  all: 422,
+  wit: 397,
+  thi: 394,
+  tio: 378
+}

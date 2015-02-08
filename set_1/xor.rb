@@ -28,15 +28,20 @@ module XOR
   end
 
   def self.single_substitution(input, key=nil)
+    input_bytes = (input.class == Array ? input : Hex::Convert.to_bytes(input))
     messages = {}
     keys = (key ? [key] : 0..255)
     keys.each do |k|
-      potential_key = Array.new(Hex::Convert.to_bytes(input).length, k)
-      message = Hex::Convert.to_plaintext(XOR.fixed(Hex::Convert.to_bytes(input), potential_key))
+      potential_key = Array.new(input_bytes.length, k)
+      message = Hex::Convert.to_plaintext(XOR.fixed(input_bytes, potential_key))
       next if Plaintext.score(message) == 0
-      messages[Plaintext.score(message)] = message
+      messages[Plaintext.score(message)] = { message: message, key: k }
     end
-    return (messages.max ? messages.max[1] : "")
+    if messages.max
+      single_substition_output_hash(messages.max)
+    else
+      return ""
+    end
   end
 
   def self.encode(input, key)
@@ -47,5 +52,18 @@ module XOR
       result.push(input[index] ^ key[index])
     end
     result
+  end
+
+private
+
+  def self.single_substition_output_hash(data)
+    return {
+        key: {
+          ord: data[1][:key],
+          char: data[1][:key].chr
+          },
+        histogram: data[1][:message],
+        score: data[0] / data[1][:message].split("").length
+      }
   end
 end
