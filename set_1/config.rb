@@ -7,6 +7,7 @@ require_relative 'crypto'
 require_relative 'utility'
 require_relative 'hamming'
 require_relative 'plaintext'
+require_relative 'my_base64'
 require_relative 'hex'
 require_relative 'xor'
 

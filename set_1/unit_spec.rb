@@ -9,30 +9,10 @@ describe DecoderRing do
   end
 
   describe '#break_repeating_key_xor' do
-    let(:message) { "This code is going to turn out to be surprisingly useful later on. Breaking repeating-key XOR ('Vigenere') statistically is obviously an academic exercise, a 'Crypto 101' thing. But more people 'know how' to break it than can actually break it, and a similar technique breaks something much more important." }
-
-    describe '#find_keysizes' do
-      xit 'returns an array of potential keysizes, including the correct one' do
-        msg = Hex::Convert.to_bytes(XOR.repeating_key(message, 'key'))
-        result = dr.find_keysizes(msg)
-        expect(result.include?(3)).to be true
-
-        msg = Hex::Convert.to_bytes(XOR.repeating_key(message, 'matasano'))
-        result = dr.find_keysizes(msg)
-        expect(result.include?(8)).to be true
-
-        msg = Hex::Convert.to_bytes(XOR.repeating_key(message, 'challenges'))
-        result = dr.find_keysizes(msg)
-        expect(result.include?(10)).to be true
-
-        msg = Hex::Convert.to_bytes(XOR.repeating_key(message, 'matasano challenges'))
-        result = dr.find_keysizes(msg)
-        expect(result.include?(19)).to be true
-      end
-    end
 
     it 'works great' do
-      p dr.break_repeating_key_xor_english()
+      vanilla_ice = "Vanilla Ice is sellin' and you people are buyin' "
+      expect(dr.break_repeating_key_xor_english.split("\n").include?(vanilla_ice)).to eq true
     end
   end
 end

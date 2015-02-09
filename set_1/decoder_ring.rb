@@ -4,18 +4,17 @@ class DecoderRing
   attr_accessor :target, :min_key_size, :max_key_size, :keysize
 
   def initialize(opts)
-    @target = (Utility.decode64(opts[:target_url]))
+    @target = (MyBase64.to_bytes(Utility::Web.txt_file_to_string(opts[:target_url])))
     @min_key_size = opts[:min_key_size] || 2
     @max_key_size = opts[:max_key_size] || 40
     @keysize = nil
   end
 
   def break_repeating_key_xor_english(source_bytes=target)
-    raise ArgumentError if source_bytes.class != Array
-    # key_bytes = find_key_for(source_bytes, 28..29)
-    # key = key_bytes.map {|i| i.to_s(16)}.join
-    # p Hex::Convert.to_plaintext(key)
-    message = (XOR.repeating_key(source_bytes, "Terminator X: Bring the noise"))
+    Utility.descriptive_error(Array, source_bytes)
+    key_bytes = find_key_for(source_bytes, 28..29)
+    key = key_bytes.map {|i| i.to_s(16)}.join
+    message = XOR.repeating_key(source_bytes, Hex::Convert.to_plaintext(key))
     Hex::Convert.to_plaintext(message)
   end
 
@@ -30,7 +29,7 @@ class DecoderRing
   end
 
   def find_keysizes(source_bytes)
-    raise ArgumentError if source_bytes.class != Array
+    Utility.descriptive_error(Array, source_bytes)
     scores = score_keysizes(source_bytes).values.sort
     average_score = scores.reduce(:+) / scores.length
     score_keysizes(source_bytes).keep_if do |keysize, distance|
@@ -39,7 +38,7 @@ class DecoderRing
   end
 
   def transposed_blocks(source_bytes, keysize)
-    raise ArgumentError if source_bytes.class != Array
+    Utility.descriptive_error(Array, source_bytes)
     groups = Utility.groups_of(keysize, source_bytes)
     groups.transpose
   end
@@ -60,7 +59,7 @@ private
   end
 
   def score_keysizes(source_bytes)
-    raise ArgumentError if source_bytes.class != Array
+    Utility.descriptive_error(Array, source_bytes)
     potential_keysizes = {}
     (min_key_size..max_key_size).each do |keysize|
 
