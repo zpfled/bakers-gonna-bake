@@ -22,4 +22,8 @@ class Crypto
   def self.challenge_5(input_plaintext, key)
     DecoderRing::XOR.repeating_key(input_plaintext, key)
   end
+
+  def self.challenge_6(input_url)
+    DecoderRing.new(target_url: input_url).break_repeating_xor_english
+  end
 end

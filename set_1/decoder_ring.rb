@@ -54,7 +54,6 @@ private
       end
       potential_keys[Plaintext.score(key_bytes.join)] = key_bytes
     end
-    p potential_keys.max[1].length
     return potential_keys.max[1]
   end
 
