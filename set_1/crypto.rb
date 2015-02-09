@@ -12,7 +12,7 @@ class Crypto
   end
 
   def self.challenge_3(input)
-    XOR.single_substitution(input)
+    XOR.single_substitution(input)[:histogram]
   end
 
   def self.challenge_4(input_url)

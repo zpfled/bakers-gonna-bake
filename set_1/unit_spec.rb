@@ -12,7 +12,7 @@ describe DecoderRing do
     let(:message) { "This code is going to turn out to be surprisingly useful later on. Breaking repeating-key XOR ('Vigenere') statistically is obviously an academic exercise, a 'Crypto 101' thing. But more people 'know how' to break it than can actually break it, and a similar technique breaks something much more important." }
 
     describe '#find_keysizes' do
-      it 'returns an array of potential keysizes, including the correct one' do
+      xit 'returns an array of potential keysizes, including the correct one' do
         msg = Hex::Convert.to_bytes(XOR.repeating_key(message, 'key'))
         result = dr.find_keysizes(msg)
         expect(result.include?(3)).to be true
@@ -32,7 +32,7 @@ describe DecoderRing do
     end
 
     it 'works great' do
-      p dr.break_repeating_key_xor()
+      p dr.break_repeating_key_xor_english()
     end
   end
 end
@@ -120,8 +120,8 @@ describe Utility do
       expect(Utility.groups_of(2, [1, 2, 3, 4])).to eq([[1, 2], [3, 4]])
     end
 
-    it 'even the input length is not divisible by n, it handles things well' do
-      expect(Utility.groups_of(2, [1, 2, 3, 4, 5])).to eq([[1, 2], [3, 4], [5]])
+    it 'even the input length is not divisible by n, it only returns sets of n.length' do
+      expect(Utility.groups_of(2, [1, 2, 3, 4, 5])).to eq([[1, 2], [3, 4]])
     end
   end
 end

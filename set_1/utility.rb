@@ -5,14 +5,14 @@ module Utility
   def self.groups_of(n, input, output=[])
     # recursive sexiness
     return (input.length > 0 ? output : output) if input.length < n
-    # return (input.length > 0 ? output << input : output) if input.length < n
     output << input.shift(n)
     groups_of(n, input, output)
   end
 
-  def self.decode64(target_string)
-    target_string_sans_newlines = Web.txt_file_string(target_string).gsub("\n", "")
-    Base64.strict_decode64(target_string_sans_newlines).chars.map(&:ord)
+  def self.decode64(target)
+    p target_string_sans_newlines = Web.txt_file_string(target)
+    Base64.decode64(target_string_sans_newlines).chars.map(&:ord)
+    # Base64.decode64("HUIfTQsPAh9PE048GmllH0kcDk4TAQsHThsBFkU2AB4BSWQgVB0dQzNTTmVS").chars.map(&:ord)
   end
 
   module Web

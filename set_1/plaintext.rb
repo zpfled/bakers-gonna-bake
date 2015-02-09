@@ -18,8 +18,6 @@ module Plaintext
 
   def self.score(plain_text)
     score_chars(plain_text)
-    # + score_bigrams(plain_text)
-    # + score_trigrams(plain_text)
   end
 
 private

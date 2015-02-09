@@ -10,20 +10,13 @@ class DecoderRing
     @keysize = nil
   end
 
-  def break_repeating_key_xor(source_bytes=target)
-    p "source_bytes: #{source_bytes}"
+  def break_repeating_key_xor_english(source_bytes=target)
     raise ArgumentError if source_bytes.class != Array
-    # find_keysizes(source_bytes).each do |try_keysize|
-    (28..29).each do |try_keysize|
-      puts
-      puts
-      p "try_keysize: #{try_keysize}"
-      puts
-      puts
-      transposed_blocks(source_bytes.dup, try_keysize).each do |block|
-        find_key_for(block)
-      end
-    end
+    # key_bytes = find_key_for(source_bytes, 28..29)
+    # key = key_bytes.map {|i| i.to_s(16)}.join
+    # p Hex::Convert.to_plaintext(key)
+    message = (XOR.repeating_key(source_bytes, "Terminator X: Bring the noise"))
+    Hex::Convert.to_plaintext(message)
   end
 
   def find_needle
@@ -41,12 +34,11 @@ class DecoderRing
     scores = score_keysizes(source_bytes).values.sort
     average_score = scores.reduce(:+) / scores.length
     score_keysizes(source_bytes).keep_if do |keysize, distance|
-      distance < average_score
+      distance > average_score
     end.keys
   end
 
   def transposed_blocks(source_bytes, keysize)
-    p "calling transposed_blocks"
     raise ArgumentError if source_bytes.class != Array
     groups = Utility.groups_of(keysize, source_bytes)
     groups.transpose
@@ -54,10 +46,17 @@ class DecoderRing
 
 private
 
-  def find_key_for(block)
-    best_guesses = []
-    p best_guesses << XOR.single_substitution(block)
-    # key_data[:score]
+  def find_key_for(source_bytes, key_size_range=(min_key_size..max_key_size))
+    potential_keys = {}
+    key_size_range.each do |try_keysize|
+      key_bytes = []
+      transposed_blocks(source_bytes.dup, try_keysize).each do |block|
+        key_bytes << XOR.single_substitution(block)[:key][:ord]
+      end
+      potential_keys[Plaintext.score(key_bytes.join)] = key_bytes
+    end
+    p potential_keys.max[1].length
+    return potential_keys.max[1]
   end
 
   def score_keysizes(source_bytes)
