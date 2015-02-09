@@ -43,5 +43,18 @@ describe Crypto do
         expect(Crypto.challenge_5(message, key)).to eq(encrypted_message)
       end
     end
+
+    describe 'challenge_6' do
+      let(:dr) do
+        DecoderRing.new({
+          target_url: "cryptopals.com/static/challenge-data/6.txt"
+        })
+      end
+      it 'completed' do
+        puts dr.break_repeating_key_xor_english
+        vanilla_ice = "Vanilla Ice is sellin' and you people are buyin' "
+        expect(dr.break_repeating_key_xor_english.split("\n").include?(vanilla_ice)).to eq true
+      end
+    end
   end
 end
