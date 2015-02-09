@@ -37,26 +37,26 @@ private
     chr == " " ? 13000 : 0
   end
 
-  def self.score_bigrams(plain_text)
-    # return sum of relative frequencies of most common bigrams in English
-    score = 0
-    plain_text.chars.each_with_index do |letter, i|
-      bigram = "#{letter}#{plain_text[i + 1]}"
-      next if !BIGRAMS[bigram.to_sym]
-      score += BIGRAMS[bigram.to_sym]
-    end
-    return score
-  end
+  # def self.score_bigrams(plain_text)
+  #   # return sum of relative frequencies of most common bigrams in English
+  #   score = 0
+  #   plain_text.chars.each_with_index do |letter, i|
+  #     bigram = "#{letter}#{plain_text[i + 1]}"
+  #     next if !BIGRAMS[bigram.to_sym]
+  #     score += BIGRAMS[bigram.to_sym]
+  #   end
+  #   return score
+  # end
 
 
-  def self.score_trigrams(plain_text)
-    # return sum of relative frequencies of most common trigrams in English
-    score = 0
-    plain_text.chars.each_with_index do |letter, i|
-      trigram = "#{letter}#{plain_text[i + 1]}#{plain_text[i + 2]}"
-      next if !TRIGRAMS[trigram.to_sym]
-      score += TRIGRAMS[trigram.to_sym]
-    end
-    return score
-  end
+  # def self.score_trigrams(plain_text)
+  #   # return sum of relative frequencies of most common trigrams in English
+  #   score = 0
+  #   plain_text.chars.each_with_index do |letter, i|
+  #     trigram = "#{letter}#{plain_text[i + 1]}#{plain_text[i + 2]}"
+  #     next if !TRIGRAMS[trigram.to_sym]
+  #     score += TRIGRAMS[trigram.to_sym]
+  #   end
+  #   return score
+  # end
 end

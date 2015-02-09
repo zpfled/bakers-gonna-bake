@@ -1,7 +1,7 @@
 system 'clear'
 require_relative 'config'
 
-describe DecoderRing do
+context DecoderRing do
   let(:dr) do
     DecoderRing.new({
       target_url: "cryptopals.com/static/challenge-data/6.txt"
@@ -17,26 +17,42 @@ describe DecoderRing do
   end
 end
 
-describe Hex do
+context MyBase64 do
 
-  describe '#to_plaintext(hex_string)' do
-    it 'returns plaintext representation of hex_string' do
-      input = "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"
-      output = "I'm killing your brain like a poisonous mushroom"
-      expect(Hex::Convert.to_plaintext(input)).to eq output
-    end
-  end
-
-  describe '#to_bytes(hex_string)' do
-    it 'returns array of bytes as integers' do
-      input = "49276d"
-      output = [73, 39, 109]
-      expect(Hex::Convert.to_bytes(input)).to eq output
+  describe '#to_bytes' do
+    it 'returns an array of bytes as integers' do
+      input = "HUIfTQsPAh9PE048GmllH0kcDk4TAQsHThsBFkU2AB4BSWQgVB0dQzNTTmVS"
+      output = [29, 66, 31, 77, 11, 15, 2, 31, 79, 19, 78, 60, 26, 105,
+        101, 31, 73, 28, 14, 78, 19, 1, 11, 7, 78, 27, 1, 22, 69, 54, 0,
+        30, 1, 73, 100, 32, 84, 29, 29, 67, 51, 83, 78, 101, 82]
+      expect(MyBase64::Convert.to_bytes(input)).to eq output
     end
   end
 end
 
-describe Plaintext do
+context Hex do
+
+  describe '::Convert' do
+
+    describe '#to_plaintext(hex_string)' do
+      it 'returns plaintext representation of hex_string' do
+        input = "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d"
+        output = "I'm killing your brain like a poisonous mushroom"
+        expect(Hex::Convert.to_plaintext(input)).to eq output
+      end
+    end
+
+    describe '#to_bytes(hex_string)' do
+      it 'returns array of bytes as integers' do
+        input = "49276d"
+        output = [73, 39, 109]
+        expect(Hex::Convert.to_bytes(input)).to eq output
+      end
+    end
+  end
+end
+
+context Plaintext do
 
   describe '::Convert' do
     describe '#to_bytes(plain_text)' do
@@ -66,7 +82,7 @@ describe Plaintext do
   end
 end
 
-describe Hamming do
+context Hamming do
 
   describe '#distance' do
     it 'returns the Hamming distance between two arrays of bytes' do
@@ -93,7 +109,7 @@ describe Hamming do
 
 end
 
-describe Utility do
+context Utility do
 
   describe '#groups_of(n, array)' do
     it 'returns an array of arrays, each one of length n' do

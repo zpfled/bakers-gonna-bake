@@ -4,7 +4,7 @@ class DecoderRing
   attr_accessor :target, :min_key_size, :max_key_size, :keysize
 
   def initialize(opts)
-    @target = (MyBase64.to_bytes(Utility::Web.txt_file_to_string(opts[:target_url])))
+    @target = (MyBase64::Convert.to_bytes(Utility::Web.txt_file_to_string(opts[:target_url])))
     @min_key_size = opts[:min_key_size] || 2
     @max_key_size = opts[:max_key_size] || 40
     @keysize = nil
