@@ -1,10 +1,18 @@
 require_relative '../../../modules/utils/plaintext'
 
 context Plaintext do
+  let(:bytes) { [97] }
+  let(:plaintext) { 'a' }
+
+  describe '#encode' do
+    it 'converts bytes to plaintext' do
+      expect(Plaintext.encode(bytes)).to eq plaintext
+    end
+  end
 
   describe '#to_bytes(plain_text)' do
-    it 'returns array of bytes as integers' do
-      expect(Plaintext.to_bytes('a')).to eq [97]
+    it 'converts plaintext to bytes' do
+      expect(Plaintext.to_bytes(plaintext)).to eq bytes
     end
   end
 
