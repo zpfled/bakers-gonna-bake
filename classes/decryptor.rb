@@ -1,27 +1,30 @@
-require_relative 'config'
+require_relative '../modules/xor'
+require_relative '../modules/utils/hex'
+require_relative '../modules/utils/utility'
 
-class DecoderRing
-  attr_accessor :target, :min_key_size, :max_key_size, :keysize
+class Decryptor
+  attr_accessor :text, :min_key_size, :max_key_size, :keysize
 
   def initialize(opts)
-    @target = (MyBase64::Convert.to_bytes(Utility::Web.txt_file_to_string(opts[:target_url])))
+    # String to decode
+    @text = opts[:text]
     @min_key_size = opts[:min_key_size] || 2
     @max_key_size = opts[:max_key_size] || 40
     @keysize = nil
   end
 
-  def break_repeating_key_xor_english(source_bytes=target)
-    Utility.descriptive_error(Array, source_bytes)
+  def break_repeating_key_xor_english(source_bytes=text_bytes)
+    Utility.enforce_argument_type(Array, source_bytes)
     key_bytes = find_key_for(source_bytes, 28..29)
-    key = key_bytes.map {|i| i.to_s(16)}.join
-    message = XOR.repeating_key(source_bytes, Hex::Convert.to_plaintext(key))
-    Hex::Convert.to_plaintext(message)
+    hex_string = Hex.encode(key_bytes)
+    message = XOR.repeating_key_encrypt(source_bytes, Plaintext.encode(Hex.to_bytes(hex_string)))
+    Plaintext.encode(Hex.to_bytes(message))
   end
 
   def find_needle
     potential_messages = {}
-    target.split("\n").each do |line|
-      try = XOR.single_substitution(line)
+    text.split("\n").each do |line|
+      try = XOR.single_substitution(line)[:histogram]
       next if Plaintext.score(try) < 10000
       potential_messages[Plaintext.score(try)] = try
     end
@@ -29,7 +32,7 @@ class DecoderRing
   end
 
   def find_keysizes(source_bytes)
-    Utility.descriptive_error(Array, source_bytes)
+    Utility.enforce_argument_type(Array, source_bytes)
     scores = score_keysizes(source_bytes).values.sort
     average_score = scores.reduce(:+) / scores.length
     score_keysizes(source_bytes).keep_if do |keysize, distance|
@@ -38,12 +41,15 @@ class DecoderRing
   end
 
   def transposed_blocks(source_bytes, keysize)
-    Utility.descriptive_error(Array, source_bytes)
-    groups = Utility.groups_of(keysize, source_bytes)
-    groups.transpose
+    Utility.enforce_argument_type(Array, source_bytes)
+    Utility.groups_of(keysize, source_bytes).transpose
   end
 
 private
+
+  def text_bytes
+    MyBase64.to_bytes(text)
+  end
 
   def find_key_for(source_bytes, key_size_range=(min_key_size..max_key_size))
     potential_keys = {}
@@ -58,7 +64,7 @@ private
   end
 
   def score_keysizes(source_bytes)
-    Utility.descriptive_error(Array, source_bytes)
+    Utility.enforce_argument_type(Array, source_bytes)
     potential_keysizes = {}
     (min_key_size..max_key_size).each do |keysize|
 

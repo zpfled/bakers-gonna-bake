@@ -1,22 +1,26 @@
-require_relative 'config'
+require_relative './utils/hex'
+require_relative './utils/plaintext'
+require_relative './utils/utility'
 
 module XOR
 
-  def self.repeating_key(input, key)
-    raise ArgumentError if key.class != String
-    input_bytes = (input.class == Array ? input : Plaintext::Convert.to_bytes(input))
-    key_bytes = Plaintext::Convert.to_bytes(key)
+  def self.repeating_key_encrypt(input, key)
+    Utility.enforce_argument_type(String, key)
+    input_bytes = (input.class == Array ? input : Plaintext.to_bytes(input))
+    key_bytes = Plaintext.to_bytes(key)
     counter = 0
     until key_bytes.length == input_bytes.length
       counter = 0 if counter > key.length - 1
-      key_bytes << Plaintext::Convert.to_bytes(key[counter])[0]
+      key_bytes << Plaintext.to_bytes(key[counter])[0]
       counter += 1
     end
     fixed(input_bytes, key_bytes)
   end
 
   def self.fixed(input, key) # return string of hexadecimal bytes
-    raise ArgumentError if (input.class != Array || key.class != Array)
+    Utility.enforce_argument_type(Array, input)
+    Utility.enforce_argument_type(Array, key)
+
     encode(input, key).map do |byte|
       byte = byte.to_s(16)
       if byte.length == 1
@@ -27,12 +31,12 @@ module XOR
   end
 
   def self.single_substitution(input, key=nil)
-    input_bytes = (input.class == Array ? input : Hex::Convert.to_bytes(input))
+    input_bytes = (input.class == Array ? input : Hex.to_bytes(input))
     messages = {}
     keys = (key ? [key] : 0..255)
     keys.each do |k|
       potential_key = Array.new(input_bytes.length, k)
-      message = Hex::Convert.to_plaintext(XOR.fixed(input_bytes, potential_key))
+      message = Plaintext.encode(Hex.to_bytes(XOR.fixed(input_bytes, potential_key)))
       next if Plaintext.score(message) == 0
       messages[Plaintext.score(message)] = { message: message, key: k }
     end
