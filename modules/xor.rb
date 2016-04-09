@@ -5,38 +5,40 @@ require_relative './utils/utility'
 module XOR
 
   def self.repeating_key_encrypt(input, key)
-    Utility.enforce_argument_type(String, key)
-    input_bytes = (input.class == Array ? input : Plaintext.to_bytes(input))
-    key_bytes = Plaintext.to_bytes(key)
-    counter = 0
-    until key_bytes.length == input_bytes.length
-      counter = 0 if counter > key.length - 1
-      key_bytes << Plaintext.to_bytes(key[counter])[0]
-      counter += 1
-    end
-    fixed(input_bytes, key_bytes)
-  end
-
-  def self.fixed(input, key) # return string of hexadecimal bytes
     Utility.enforce_argument_type(Array, input)
     Utility.enforce_argument_type(Array, key)
 
-    encode(input, key).map do |byte|
-      byte = byte.to_s(16)
-      if byte.length == 1
-        byte.prepend('0')
-      end
-      byte
-    end.join
+    counter = 0
+
+    until key.length == input.length
+      counter = 0 if counter > key.length - 1
+      key << key[counter]
+      counter += 1
+    end
+
+    fixed(input, key)
+  end
+
+  # takes two equal-length buffers and produces their XOR combination
+  # format is bytes by default, but can be Hex, Plaintext, or Base64
+  def self.fixed(input, key, format=nil)
+    require_bytes(input, key)
+
+    bytes = (0..input.length - 1).map do |index|
+      input[index] ^ key[index]
+    end
+
+    return format ? format.encode(bytes) : bytes
   end
 
   def self.single_substitution(input, key=nil)
-    input_bytes = (input.class == Array ? input : Hex.to_bytes(input))
+    require_bytes(input)
+
     messages = {}
     keys = (key ? [key] : 0..255)
     keys.each do |k|
-      potential_key = Array.new(input_bytes.length, k)
-      message = Plaintext.encode(Hex.to_bytes(XOR.fixed(input_bytes, potential_key)))
+      potential_key = Array.new(input.length, k)
+      message = Plaintext.encode(XOR.fixed(input, potential_key))
       next if Plaintext.score(message) == 0
       messages[Plaintext.score(message)] = { message: message, key: k }
     end
@@ -47,17 +49,12 @@ module XOR
     end
   end
 
-  def self.encode(input, key)
-    raise ArgumentError if (input.class != Array || key.class != Array)
-    result = []
-    counter = 0
-    (0..input.length - 1).each do |index|
-      result.push(input[index] ^ key[index])
-    end
-    result
-  end
-
 private
+
+  def self.require_bytes(input=[], key=[])
+    Utility.enforce_argument_type(Array, input)
+    Utility.enforce_argument_type(Array, key)
+  end
 
   def self.single_substition_output_hash(data)
     return {

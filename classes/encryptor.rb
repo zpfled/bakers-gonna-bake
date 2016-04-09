@@ -1,19 +1,23 @@
 require_relative '../modules/xor'
-require_relative '../modules/utils/plaintext'
 require_relative '../modules/utils/utility'
 
 class Encryptor
+  attr_reader :input_type, :output_type
 
-  def repeating_key(input, key)
+  def initialize(input_type, output_type)
+    Utility.enforce_argument_type(Module, input_type)
+    Utility.enforce_argument_type(Module, output_type)
+
+    @input_type = input_type
+    @output_type = output_type
+  end
+
+  def repeating_key_xor(input, key)
+    Utility.enforce_argument_type(String, input)
     Utility.enforce_argument_type(String, key)
-    input_bytes = (input.class == Array ? input : Plaintext.to_bytes(input))
-    key_bytes = Plaintext.to_bytes(key)
-    counter = 0
-    until key_bytes.length == input_bytes.length
-      counter = 0 if counter > key.length - 1
-      key_bytes << Plaintext.to_bytes(key[counter])[0]
-      counter += 1
-    end
-    fixed(input_bytes, key_bytes)
+
+    input = input_type.to_bytes(input)
+    key = input_type.to_bytes(key)
+    return output_type.encode(XOR.repeating_key_encrypt(input, key))
   end
 end

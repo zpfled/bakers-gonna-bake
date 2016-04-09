@@ -1,43 +1,43 @@
+require_relative '../constants'
+require_relative '../spec/web_resources'
 require_relative '../modules/xor'
 require_relative '../modules/utils/hex'
 require_relative '../modules/utils/utility'
 
 class Decryptor
-  attr_accessor :text, :min_key_size, :max_key_size, :keysize
+  attr_accessor :encoded_bytes
+  attr_reader :input_type, :output_type
 
-  def initialize(opts)
-    # String to decode
-    @text = opts[:text]
-    @min_key_size = opts[:min_key_size] || 2
-    @max_key_size = opts[:max_key_size] || 40
-    @keysize = nil
+  def initialize(input_type, output_type)
+    Utility.enforce_argument_type(Module, input_type)
+    Utility.enforce_argument_type(Module, output_type)
+
+    @input_type = input_type
+    @output_type = output_type
   end
 
-  def break_repeating_key_xor_english(source_bytes=text_bytes)
-    Utility.enforce_argument_type(Array, source_bytes)
-    key_bytes = find_key_for(source_bytes, 28..29)
-    hex_string = Hex.encode(key_bytes)
-    message = XOR.repeating_key_encrypt(source_bytes, Plaintext.encode(Hex.to_bytes(hex_string)))
-    Plaintext.encode(Hex.to_bytes(message))
+  def repeating_key_xor_to_english(input)
+    Utility.enforce_argument_type(String, input)
+
+    input_bytes = input_type.to_bytes(input)
+    key_bytes = find_key_for(input_bytes, 28..29)
+    message = XOR.repeating_key_encrypt(input_bytes, key_bytes)
+    Plaintext.encode(message)
   end
 
-  def find_needle
+  def find_english_line(lines_of_bytes)
     potential_messages = {}
-    text.split("\n").each do |line|
-      try = XOR.single_substitution(line)[:histogram]
-      next if Plaintext.score(try) < 10000
-      potential_messages[Plaintext.score(try)] = try
-    end
-    potential_messages.max
-  end
+    lines_of_bytes.each do |line|
 
-  def find_keysizes(source_bytes)
-    Utility.enforce_argument_type(Array, source_bytes)
-    scores = score_keysizes(source_bytes).values.sort
-    average_score = scores.reduce(:+) / scores.length
-    score_keysizes(source_bytes).keep_if do |keysize, distance|
-      distance > average_score
-    end.keys
+      try = XOR.single_substitution(line)[:histogram]
+      if Plaintext.score(try) > (line.length * MEAN_ENGLISH_CHAR_FREQUENCY)
+        potential_messages[Plaintext.score(try)] = try
+      else
+        next
+      end
+    end
+
+    return potential_messages.max
   end
 
   def transposed_blocks(source_bytes, keysize)
@@ -45,13 +45,9 @@ class Decryptor
     Utility.groups_of(keysize, source_bytes).transpose
   end
 
-private
+  private
 
-  def text_bytes
-    MyBase64.to_bytes(text)
-  end
-
-  def find_key_for(source_bytes, key_size_range=(min_key_size..max_key_size))
+  def find_key_for(source_bytes, key_size_range)
     potential_keys = {}
     key_size_range.each do |try_keysize|
       key_bytes = []

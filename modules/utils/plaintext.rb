@@ -24,8 +24,11 @@ module Plaintext
     score = 0
     plain_text_string.chars.each do |letter|
       score += score_space_char(letter)
-      next if !ENGLISH_CHAR_FREQUENCY[letter.to_sym]
-      score += ENGLISH_CHAR_FREQUENCY[letter.to_sym]
+      if ENGLISH_CHAR_FREQUENCY[letter.to_sym]
+        score += ENGLISH_CHAR_FREQUENCY[letter.to_sym]
+      else
+        next
+      end
     end
     return score
   end
