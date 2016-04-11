@@ -16,12 +16,12 @@ module XOR
       counter += 1
     end
 
-    fixed(input, key)
+    gate(input, key)
   end
 
   # takes two equal-length buffers and produces their XOR combination
   # format is bytes by default, but can be Hex, Plaintext, or Base64
-  def self.fixed(input, key, format=nil)
+  def self.gate(input, key, format=nil)
     require_bytes(input, key)
 
     bytes = (0..input.length - 1).map do |index|
@@ -38,7 +38,7 @@ module XOR
     keys = (key ? [key] : 0..255)
     keys.each do |k|
       potential_key = Array.new(input.length, k)
-      message = Plaintext.encode(XOR.fixed(input, potential_key))
+      message = Plaintext.encode(XOR.gate(input, potential_key))
       next if Plaintext.score(message) == 0
       messages[Plaintext.score(message)] = { message: message, key: k }
     end

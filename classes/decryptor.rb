@@ -1,5 +1,6 @@
 require_relative '../constants'
 require_relative '../spec/web_resources'
+require_relative '../modules/aes'
 require_relative '../modules/xor'
 require_relative '../modules/utils/hex'
 require_relative '../modules/utils/utility'
@@ -14,6 +15,14 @@ class Decryptor
 
     @input_type = input_type
     @output_type = output_type
+  end
+
+  def decipher_aes(input, key_bytes)
+    Utility.enforce_argument_type(String, input)
+    Utility.enforce_argument_type(Array, key_bytes)
+
+    input_bytes = input_type.to_bytes(input)
+    AES.decipher(input_bytes, key_bytes)
   end
 
   def repeating_key_xor_to_english(input)

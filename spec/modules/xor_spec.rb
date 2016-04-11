@@ -2,14 +2,14 @@ require_relative '../../modules/xor'
 
 describe XOR do
 
-  describe 'Set 1 (Challenge 2): XOR.fixed' do
+  describe 'Set 1 (Challenge 2): XOR.gate' do
     it 'takes two equal-length buffers and produces their XOR combination' do
       buffer_1 = '1c0111001f010100061a024b53535009181c'
       buffer_2 = '686974207468652062756c6c277320657965'
       desired_output = '746865206b696420646f6e277420706c6179'
 
       expect(
-        XOR.fixed(Hex.to_bytes(buffer_1), Hex.to_bytes(buffer_2), Hex)
+        XOR.gate(Hex.to_bytes(buffer_1), Hex.to_bytes(buffer_2), Hex)
       ).to eq(desired_output)
     end
   end
