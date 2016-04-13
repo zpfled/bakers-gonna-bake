@@ -4,14 +4,14 @@ require_relative '../../modules/utils/hex'
 describe GaloisField256 do
 
   describe '#add' do
-    it '1 + 1 is 2' do
+    it '1 + 1 is 0' do
       gf = GaloisField256.new
-      expect(gf.add(1, 1)).to eq 2
+      expect(gf.add(1, 1)).to eq [0]
     end
 
-    it '1 + 2 is 1' do
+    it '1 + 2 is 3' do
       gf = GaloisField256.new
-      expect(gf.add(1, 2)).to eq 1
+      expect(gf.add(1, 2)).to eq [3]
     end
   end
 
@@ -24,10 +24,8 @@ describe GaloisField256 do
     it 'the inverse of HEX(53) is HEX(CA)' do
       gf = GaloisField256.new
       byte53 = Hex.to_bytes('53')[0]
-      p byte53
 
       byteCA = Hex.to_bytes('CA')[0]
-      p byteCA
       expect(gf.inverse_of(byte53)).to eq byteCA
     end
   end
