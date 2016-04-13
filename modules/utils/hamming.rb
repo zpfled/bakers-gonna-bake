@@ -4,6 +4,7 @@ module Hamming
   def self.distance(bytes1, bytes2)
     Utility.enforce_argument_type(Array, bytes1)
     Utility.enforce_argument_type(Array, bytes2)
+
     return "both args must be of the same length" if bytes1.length != bytes2.length
     score = 0
     (0..bytes1.length - 1).each do |i|

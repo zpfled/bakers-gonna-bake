@@ -30,7 +30,7 @@ class Decryptor
 
     input_bytes = input_type.to_bytes(input)
     key_bytes = find_key_for(input_bytes, 28..29)
-    message = XOR.repeating_key_encrypt(input_bytes, key_bytes)
+    message = XOR.repeating_key_gate(input_bytes, key_bytes)
     Plaintext.encode(message)
   end
 
@@ -39,6 +39,7 @@ class Decryptor
     lines_of_bytes.each do |line|
 
       try = XOR.single_substitution(line)[:histogram]
+
       if Plaintext.score(try) > (line.length * MEAN_ENGLISH_CHAR_FREQUENCY)
         potential_messages[Plaintext.score(try)] = try
       else
@@ -49,12 +50,12 @@ class Decryptor
     return potential_messages.max
   end
 
+  private
+
   def transposed_blocks(source_bytes, keysize)
     Utility.enforce_argument_type(Array, source_bytes)
     Utility.groups_of(keysize, source_bytes).transpose
   end
-
-  private
 
   def find_key_for(source_bytes, key_size_range)
     potential_keys = {}

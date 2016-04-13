@@ -16,8 +16,8 @@ class Encryptor
     Utility.enforce_argument_type(String, input)
     Utility.enforce_argument_type(String, key)
 
-    input = input_type.to_bytes(input)
-    key = input_type.to_bytes(key)
-    return output_type.encode(XOR.repeating_key_encrypt(input, key))
+    input_bytes = input_type.to_bytes(input)
+    key_bytes = input_type.to_bytes(key)
+    return output_type.encode(XOR.repeating_key_gate(input_bytes, key_bytes))
   end
 end

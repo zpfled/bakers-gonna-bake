@@ -4,32 +4,28 @@ require_relative './utils/utility'
 
 module XOR
 
-  def self.repeating_key_encrypt(input, key)
-    Utility.enforce_argument_type(Array, input)
-    Utility.enforce_argument_type(Array, key)
+  # takes two buffers and produces their XOR combination, expanding the key size
+  # until both buffers are equal length
+  def self.repeating_key_gate(input_bytes, key_bytes)
+    require_bytes(input_bytes, key_bytes)
 
-    counter = 0
-
-    until key.length == input.length
-      counter = 0 if counter > key.length - 1
-      key << key[counter]
-      counter += 1
-    end
-
-    gate(input, key)
+    key_bytes = expand_key(key_bytes, input_bytes.length)
+    gate(input_bytes, key_bytes)
   end
+
 
   # takes two equal-length buffers and produces their XOR combination
   # format is bytes by default, but can be Hex, Plaintext, or Base64
-  def self.gate(input, key, format=nil)
-    require_bytes(input, key)
+  def self.gate(input_bytes, key_bytes, format=nil)
+    require_bytes(input_bytes, key_bytes)
 
-    bytes = (0..input.length - 1).map do |index|
-      input[index] ^ key[index]
+    bytes = (0..input_bytes.length - 1).map do |index|
+      input_bytes[index] ^ key_bytes[index]
     end
 
     return format ? format.encode(bytes) : bytes
   end
+
 
   def self.single_substitution(input, key=nil)
     require_bytes(input)
@@ -51,9 +47,24 @@ module XOR
 
 private
 
+  def self.expand_key(key_bytes, length)
+    counter = 0
+
+    until key_bytes.length == length
+      counter = 0 if counter > key_bytes.length - 1
+      key_bytes << key_bytes[counter]
+      counter += 1
+    end
+
+    return key_bytes
+  end
+
+  # probaby not necessary
   def self.require_bytes(input=[], key=[])
     Utility.enforce_argument_type(Array, input)
     Utility.enforce_argument_type(Array, key)
+    # Utility.enforce_argument_type(Byte, key[0])
+    # Utility.enforce_argument_type(Byte, key[0])
   end
 
   def self.single_substition_output_hash(data)

@@ -1,8 +1,7 @@
 require_relative '../modules/utils/utility'
 require_relative '../modules/and'
 require_relative '../modules/xor'
-require_relative '../classes/byte'
-require_relative '../classes/polynomial'
+require_relative '../modules/polynomial_math'
 require 'prime'
 
 
@@ -24,7 +23,9 @@ class GaloisField256
     xpoly = Polynomial.new(x.to_s(16))
     ypoly = Polynomial.new(y.to_s(16))
 
-    return (xpoly * ypoly) % Polynomial.new(reducer)
+    return PolynomialMath.modulo(
+      PolynomialMath.multiply(x, y), reducer
+    )
   end
 
   def divide(x, y)
@@ -36,7 +37,7 @@ class GaloisField256
   end
 
   def reducer
-    '100011011'
+    '100011011'.to_i(2)
   end
 
   def operate(x, y, operator_sym)
