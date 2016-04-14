@@ -27,13 +27,15 @@ module PolynomialMath
   def self.modulo(byte1, byte2)
     a, b = [Byte.to_bits(byte1), Byte.to_bits(byte2)].sort
 
+    p a, b
+
     # reduce
     while a.length < b.length
       b = (a.to_i(2) ^ b[0..(a.length-1)].to_i(2)).to_s(2) << b[a.length..-1]
     end
 
     # final xor
-    (a.to_i(2) ^ b.to_i(2))
+    a.to_i(2) ^ b.to_i(2)
   end
 
   private
