@@ -3,26 +3,6 @@ require_relative '../modules/utils/byte'
 require_relative '../modules/xor'
 
 class SubstitutionBox
-<<<<<<< HEAD
-  def transform(n)
-    # Store the multiplicative inverse of the input number in two 8-bit unsigned
-    # temporary variables: s and x
-    s = x = GaloisField256.multiplicative_inverse(n)
-
-    # For a total of four iterations:
-    # - Rotate the value s one bit to the left; if the value of s had a high bit
-    #   (eight bit from the left) of one, make the low bit of s one; otherwise the
-    #   low bit of s is zero.
-    # - Exclusive or the value of x with the value of s, storing the value in x
-
-    4.times do
-      s = rotate_bits(s)
-      x = XOR.gate([s], [x])[0]
-    end
-
-    # The value of ''x'' will now have the transformed value.
-    XOR.gate([x], [99])[0]
-=======
   # def transform(n)
   #   # Store the multiplicative inverse of the input number in two 8-bit unsigned
   #   # temporary variables: s and x
@@ -64,17 +44,12 @@ class SubstitutionBox
       8c a1 89 0d bf e6 42 68 41 99 2d 0f b0 54 bb 16
     }[n]
     Byte.from_hex(hex)
->>>>>>> working sbox, but only the copied version
   end
 
 private
 
   def rotate_bits(byte)
-<<<<<<< HEAD
-    p bits = Byte.to_bits(byte, true).split('').rotate.join
-=======
     bits = Byte.to_bits(byte, strict: true).split('').rotate(-1).join
->>>>>>> working sbox, but only the copied version
     Byte.from_bits(bits)
   end
 end
