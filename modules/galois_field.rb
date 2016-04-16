@@ -43,6 +43,23 @@ module GaloisField256
     Byte.from_hex(log_table[n])
   end
 
+  def self.rotate_eight_bits(bytes)
+    bytes.rotate
+  end
+
+  def self.rcon(byte)
+    if byte == 0
+      return byte
+    else
+      multiplier = 1
+      while byte != 1
+        multiplier = multiply(multiplier, 2)
+        byte -=1
+      end
+      return multiplier
+    end
+  end
+
 
 private
 

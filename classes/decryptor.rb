@@ -6,6 +6,9 @@ require_relative '../modules/utils/hex'
 require_relative '../modules/utils/utility'
 
 class Decryptor
+  # Modules
+  include AES
+
   attr_accessor :encoded_bytes
   attr_reader :input_type, :output_type
 
@@ -17,12 +20,12 @@ class Decryptor
     @output_type = output_type
   end
 
-  def decipher_aes(input, key_bytes)
+  def decrypt_aes(input, key_bytes)
     Utility.enforce_argument_type(String, input)
     Utility.enforce_argument_type(Array, key_bytes)
 
     input_bytes = input_type.to_bytes(input)
-    AES.decipher(input_bytes, key_bytes)
+    decipher_aes(input_bytes, key_bytes)
   end
 
   def repeating_key_xor_to_english(input)

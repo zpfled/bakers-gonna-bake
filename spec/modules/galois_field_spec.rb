@@ -23,6 +23,15 @@ describe GaloisField256 do
     end
   end
 
+  describe '#rotate_eight_bits' do
+    it 'rotates a collection of bytes exactly eight bits to the left' do
+      initial_bytes = Hex.to_bytes('1d2c3a4f')
+      output_bytes = Hex.to_bytes('2c3a4f1d')
+
+      expect(GaloisField256.rotate_eight_bits(initial_bytes)).to eq output_bytes
+    end
+  end
+
   describe '#multiplicative_inverse' do
     it 'the inverse of 1 is 1' do
       expect(GaloisField256.multiplicative_inverse(1)).to eq 1

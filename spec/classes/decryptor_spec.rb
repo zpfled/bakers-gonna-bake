@@ -24,10 +24,10 @@ describe Decryptor do
   end
 
   describe 'Set 1 (Challenge 7): #ecb' do
-    xit 'decrypts aes-128-ecb with a given key' do
+    it 'decrypts aes-128-ecb with a given key' do
       base64_text = WebResources.challenge_7
       key = Plaintext.to_bytes("YELLOW SUBMARINE")
-      decryption = Decryptor.new(MyBase64, Plaintext).decipher_aes(base64_text, key)
+      decryption = Decryptor.new(MyBase64, Plaintext).decrypt_aes(base64_text, key)
 
       p decryption
       # vanilla_ice = "Vanilla Ice is sellin' and you people are buyin' "
